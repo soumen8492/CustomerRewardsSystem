@@ -5,6 +5,11 @@ public class Reward {
     private String month;
     private int point;
 
+    public Reward(String custId, int point) {
+        this.custId = custId;
+        this.point = point;
+    }
+
     public String getCustId() {
         return custId;
     }

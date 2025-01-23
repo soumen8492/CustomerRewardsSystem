@@ -1,10 +1,32 @@
 package CustomerRewardsApp.models;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "CUSTOMERTRANSACTION")
 public class Transaction {
+    @Id
+    @Column(name = "tran_id")
     private String TransactionId;
+    @Column(name="cust_id")
     private String custId;
+    @Column(name="amount")
     private int amount;
+    @Column(name="mnth")
     private String monthOfTransaction;
+    @Column(name="points")
+    private int points;
+
+    public int getPoints() {
+        return points;
+    }
+
+    public void setPoints(int points) {
+        this.points = points;
+    }
 
     public Transaction() {
     }
@@ -47,6 +69,7 @@ public class Transaction {
                 "TransactionId='" + TransactionId + '\'' +
                 ", custId='" + custId + '\'' +
                 ", amount=" + amount +
+                ", points=" + points +
                 ", monthOfTransaction='" + monthOfTransaction + '\'' +
                 '}';
     }
