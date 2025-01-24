@@ -31,6 +31,14 @@ public class Transaction {
     public Transaction() {
     }
 
+    public Transaction(String transactionId, String custId, int amount, String monthOfTransaction, int points) {
+        TransactionId = transactionId;
+        this.custId = custId;
+        this.amount = amount;
+        this.monthOfTransaction = monthOfTransaction;
+        this.points = points;
+    }
+
     public String getTransactionId() {
         return TransactionId;
     }
