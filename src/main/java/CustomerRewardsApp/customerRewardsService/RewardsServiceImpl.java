@@ -17,7 +17,7 @@ public class RewardsServiceImpl implements RewardsService{
     RewardsRepository rewardsRepository;
     @Override
     public List<Transaction> getAllTransaction() {
-        return (List<Transaction>) rewardsRepository.findAll();
+        return rewardsRepository.findAll();
     }
 
     @Override
@@ -33,18 +33,14 @@ public class RewardsServiceImpl implements RewardsService{
     @Override
     public List<Transaction> updateRewardPoint() {
         List<Transaction> transactions = this.getAllTransaction();
-        for (Transaction t:
-             transactions) {
-            int point = calculateRewardPoint(t);
-            t.setPoints(point);
-        }
+        transactions.forEach(t -> t.setPoints(calculateRewardPoint(t)));
         return rewardsRepository.saveAll(transactions);
     }
     public int calculateRewardPoint(Transaction trn)
     {
         int amount = trn.getAmount();
-        if(amount<50) return 0;
-        else if(amount>50 && amount<100) return (amount-50);
+        if(amount<=50) return 0;
+        else if(amount<=100) return (amount-50);
         else return 2*(amount-100)+50;
     }
     public Reward getTotalReward(String custId)
@@ -63,16 +59,13 @@ public class RewardsServiceImpl implements RewardsService{
     public List<Reward> getTotalReward() {
         List<Transaction> trn = this.getAllTransaction();
         Map<String, Integer> custMap = new HashMap<>();
-        for (Transaction t:
-             trn) {
-            if(custMap.containsKey(t.getCustId())) custMap.put(t.getCustId(), custMap.get(t.getCustId())+t.getPoints());
-            else custMap.put(t.getCustId(),t.getPoints());
-        }
+
+        //Map to contain all sum values
+        trn.forEach((t) -> custMap.merge(t.getCustId(), t.getPoints(), Integer::sum));
+
+        //Output list
         ArrayList<Reward> rewards = new ArrayList<>();
-        for(String s : custMap.keySet())
-        {
-            rewards.add(new Reward(s,custMap.get(s)));
-        }
+        custMap.forEach( (a, b) -> rewards.add(new Reward(a,b)));
         return rewards;
     }
 }
