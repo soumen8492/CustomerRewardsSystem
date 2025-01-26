@@ -1,5 +1,7 @@
 package CustomerRewardsApp.customerRewardsService;
 
+import CustomerRewardsApp.customerRewardsException.CustomerIdNotFoundException;
+import CustomerRewardsApp.customerRewardsException.TransactionNotFoundException;
 import CustomerRewardsApp.customerRewardsRepository.RewardsRepository;
 import CustomerRewardsApp.models.Reward;
 import CustomerRewardsApp.models.Transaction;
@@ -22,12 +24,22 @@ public class RewardsServiceImpl implements RewardsService{
 
     @Override
     public List<Transaction> getTransactionByCustId(String custId) {
-        return rewardsRepository.getTransactionByCustId(custId);
+        List<Transaction> transactions;
+        if(rewardsRepository.getTransactionByCustId(custId).isEmpty()) {
+            throw new CustomerIdNotFoundException(("CustId : "+custId+" is not present in the Database"),"CustId not found");
+        }
+        else transactions = rewardsRepository.getTransactionByCustId(custId);
+        return transactions;
     }
 
     @Override
     public List<Transaction> getTransactionByCustIdAndMonth(String custId, String month) {
-        return rewardsRepository.getTransactionByCustIdAndMonth(custId, month);
+        List<Transaction> transactions;
+        if(rewardsRepository.getTransactionByCustIdAndMonth(custId,month).isEmpty()) {
+            throw new TransactionNotFoundException(("CustId : "+custId+" in the month "+month+" is not present in the Database"),"TransactionResponseEntity<?> not found");
+        }
+        else transactions = rewardsRepository.getTransactionByCustId(custId);
+        return transactions;
     }
 
     @Override
@@ -45,12 +57,14 @@ public class RewardsServiceImpl implements RewardsService{
     }
     public Reward getTotalReward(String custId)
     {
+        if(this.getTransactionByCustId(custId).isEmpty()) throw new CustomerIdNotFoundException("Customer Id :"+custId+" not in db", "CustId not present");
         List<Transaction> trns = this.getTransactionByCustId(custId);
         int reward = trns.stream().mapToInt(Transaction::getPoints).sum();
         return new Reward(custId, reward);
     }
     public Reward getTotalReward(String custId, String month)
     {
+        if(this.getTransactionByCustIdAndMonth(custId, month).isEmpty()) throw new CustomerIdNotFoundException("Customer Id :"+custId+"On the month of "+month+" not in db", "CustId not present");
         List<Transaction> trns = this.getTransactionByCustIdAndMonth(custId, month);
         int reward = trns.stream().mapToInt(Transaction::getPoints).sum();
         return new Reward(custId, month, reward);

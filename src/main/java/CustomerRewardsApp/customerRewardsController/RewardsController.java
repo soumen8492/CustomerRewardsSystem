@@ -4,6 +4,7 @@ import CustomerRewardsApp.customerRewardsService.RewardsServiceImpl;
 import CustomerRewardsApp.models.Reward;
 import CustomerRewardsApp.models.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,24 +15,24 @@ public class RewardsController {
     @Autowired
     RewardsServiceImpl rewardsService;
     @GetMapping("/allTransaction")
-    public List<Transaction> getAllTransactions()
+    public ResponseEntity<?> getAllTransactions()
     {
-        return rewardsService.getAllTransaction();
+        return ResponseEntity.ok(rewardsService.getAllTransaction());
     }
     @PatchMapping("/calcRewards")
-    public List<Transaction> calculateRewardPoint()
+    public ResponseEntity<?> calculateRewardPoint()
     {
-        return rewardsService.updateRewardPoint();
+        return ResponseEntity.ok(rewardsService.updateRewardPoint());
     }
     @GetMapping("/transactions/{customerId}/{month}")
-    public List<Transaction> getByCustIdAndMonth(@PathVariable("customerId") String custId, @PathVariable("month") String month)
+    public ResponseEntity<?> getByCustIdAndMonth(@PathVariable("customerId") String custId, @PathVariable("month") String month)
     {
-        return rewardsService.getTransactionByCustIdAndMonth(custId, month);
+        return ResponseEntity.ok(rewardsService.getTransactionByCustIdAndMonth(custId, month));
     }
     @GetMapping("/transactions/{customerId}")
-    public List<Transaction> getByCustId(@PathVariable("customerId") String custId)
+    public ResponseEntity<?> getByCustId(@PathVariable("customerId") String custId)
     {
-        return rewardsService.getTransactionByCustId(custId);
+        return ResponseEntity.ok(rewardsService.getTransactionByCustId(custId));
     }
     @GetMapping("/total")
     public List<Reward> getTotal()
@@ -39,13 +40,13 @@ public class RewardsController {
         return rewardsService.getTotalReward();
     }
     @GetMapping("/total/{customerId}")
-    public Reward getTotalByCustId(@PathVariable("customerId") String custId)
+    public ResponseEntity<?> getTotalByCustId(@PathVariable("customerId") String custId)
     {
-        return rewardsService.getTotalReward(custId);
+        return ResponseEntity.ok(rewardsService.getTotalReward(custId));
     }
     @GetMapping("/total/{customerId}/{month}")
-    public Reward getTotalByCustIdAndMonth(@PathVariable("customerId") String custId, @PathVariable("month") String month)
+    public ResponseEntity<?> getTotalByCustIdAndMonth(@PathVariable("customerId") String custId, @PathVariable("month") String month)
     {
-        return rewardsService.getTotalReward(custId, month);
+        return ResponseEntity.ok(rewardsService.getTotalReward(custId, month));
     }
 }
