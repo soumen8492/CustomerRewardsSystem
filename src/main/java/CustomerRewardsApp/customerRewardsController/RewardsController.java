@@ -15,22 +15,22 @@ public class RewardsController {
     @Autowired
     RewardsServiceImpl rewardsService;
     @GetMapping("/allTransaction")
-    public ResponseEntity<?> getAllTransactions()
+    public ResponseEntity<List<Transaction>> getAllTransactions()
     {
         return ResponseEntity.ok(rewardsService.getAllTransaction());
     }
     @PatchMapping("/calcRewards")
-    public ResponseEntity<?> calculateRewardPoint()
+    public ResponseEntity<List<Transaction>> calculateRewardPoint()
     {
         return ResponseEntity.ok(rewardsService.updateRewardPoint());
     }
     @GetMapping("/transactions/{customerId}/{month}")
-    public ResponseEntity<?> getByCustIdAndMonth(@PathVariable("customerId") String custId, @PathVariable("month") String month)
+    public ResponseEntity<List<Transaction>> getByCustIdAndMonth(@PathVariable("customerId") String custId, @PathVariable("month") String month)
     {
         return ResponseEntity.ok(rewardsService.getTransactionByCustIdAndMonth(custId, month));
     }
     @GetMapping("/transactions/{customerId}")
-    public ResponseEntity<?> getByCustId(@PathVariable("customerId") String custId)
+    public ResponseEntity<List<Transaction>> getByCustId(@PathVariable("customerId") String custId)
     {
         return ResponseEntity.ok(rewardsService.getTransactionByCustId(custId));
     }
@@ -40,12 +40,12 @@ public class RewardsController {
         return rewardsService.getTotalReward();
     }
     @GetMapping("/total/{customerId}")
-    public ResponseEntity<?> getTotalByCustId(@PathVariable("customerId") String custId)
+    public ResponseEntity<Reward> getTotalByCustId(@PathVariable("customerId") String custId)
     {
         return ResponseEntity.ok(rewardsService.getTotalReward(custId));
     }
     @GetMapping("/total/{customerId}/{month}")
-    public ResponseEntity<?> getTotalByCustIdAndMonth(@PathVariable("customerId") String custId, @PathVariable("month") String month)
+    public ResponseEntity<Reward> getTotalByCustIdAndMonth(@PathVariable("customerId") String custId, @PathVariable("month") String month)
     {
         return ResponseEntity.ok(rewardsService.getTotalReward(custId, month));
     }

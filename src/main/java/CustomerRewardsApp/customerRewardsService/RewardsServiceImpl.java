@@ -75,7 +75,7 @@ public class RewardsServiceImpl implements RewardsService{
         Map<String, Integer> custMap = new HashMap<>();
 
         //Map to contain all sum values
-        trn.forEach((t) -> custMap.merge(t.getCustId(), t.getPoints(), Integer::sum));
+        trn.forEach(t -> custMap.merge(t.getCustId(), t.getPoints(), Integer::sum));
 
         //Output list
         ArrayList<Reward> rewards = new ArrayList<>();

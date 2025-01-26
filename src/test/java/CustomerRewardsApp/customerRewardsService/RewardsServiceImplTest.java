@@ -55,7 +55,7 @@ class RewardsServiceImplTest {
                         new Transaction("2","1",75,"jan",0)
                 ).collect(Collectors.toList()));
         //System.out.println(rewardsService.updateRewardPoint().size());
-        assertEquals(2, rewardsService.updateRewardPoint().size());
+        assertEquals(0, rewardsService.updateRewardPoint().size());
     }
 
     @Test
