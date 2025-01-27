@@ -55,16 +55,15 @@ public class RewardsServiceImpl implements RewardsService{
     }
     public Reward getTotalReward(String custId)
     {
-        if(this.getTransactionByCustId(custId).isEmpty()) throw new CustomerIdNotFoundException("Customer Id :"+custId+" not in db", "CustId not present");
         List<Transaction> trns = this.getTransactionByCustId(custId);
+        if(trns.isEmpty()) throw new CustomerIdNotFoundException("Customer Id :"+custId+" not in db", "CustId not present");
         int reward = trns.stream().mapToInt(Transaction::getPoints).sum();
         return new Reward(custId, reward);
     }
     public Reward getTotalReward(String custId, String month)
     {
-        List<Transaction> trns;
-        if(this.getTransactionByCustIdAndMonth(custId, month).isEmpty()) throw new CustomerIdNotFoundException("Customer Id :"+custId+" On the month of "+month+" not in db", "CustId not present");
-        else trns = this.getTransactionByCustIdAndMonth(custId, month);
+        List<Transaction> trns = this.getTransactionByCustIdAndMonth(custId, month);
+        if(trns.isEmpty()) throw new CustomerIdNotFoundException("Customer Id :"+custId+" On the month of "+month+" not in db", "CustId not present");
         int reward = trns.stream().mapToInt(Transaction::getPoints).sum();
         return new Reward(custId, month, reward);
     }
