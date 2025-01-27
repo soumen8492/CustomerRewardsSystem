@@ -10,5 +10,5 @@ public interface RewardsService {
     List<Transaction> getAllTransaction();
     List<Transaction> getTransactionByCustId(String custId) throws CustomerIdNotFoundException;
     List<Transaction> getTransactionByCustIdAndMonth(String custId, String month) throws TransactionNotFoundException;
-    List<Transaction> updateRewardPoint();
+    List<Transaction> updateRewardPoints();
 }

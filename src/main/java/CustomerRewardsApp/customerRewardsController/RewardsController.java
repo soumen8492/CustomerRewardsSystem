@@ -22,7 +22,7 @@ public class RewardsController {
     @PatchMapping("/calcRewards")
     public ResponseEntity<List<Transaction>> calculateRewardPoint()
     {
-        return ResponseEntity.ok(rewardsService.updateRewardPoint());
+        return ResponseEntity.ok(rewardsService.updateRewardPoints());
     }
     @GetMapping("/transactions/{customerId}/{month}")
     public ResponseEntity<List<Transaction>> getByCustIdAndMonth(@PathVariable("customerId") String custId, @PathVariable("month") String month)

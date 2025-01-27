@@ -1,19 +1,15 @@
 package CustomerRewardsApp.customerRewardsController;
 
-import CustomerRewardsApp.customerRewardsRepository.RewardsRepository;
 import CustomerRewardsApp.customerRewardsService.RewardsServiceImpl;
 import CustomerRewardsApp.models.Reward;
 import CustomerRewardsApp.models.Transaction;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultMatcher;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -22,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -48,7 +43,7 @@ class RewardsControllerTest {
 
     @Test
     void calculateRewardPoint() throws Exception {
-        when(rewardsService.updateRewardPoint()).thenReturn(Stream.of(
+        when(rewardsService.updateRewardPoints()).thenReturn(Stream.of(
                 new Transaction("1","1",100,"jan",50),
                 new Transaction("2","3",150,"mar",150)
         ).collect(Collectors.toList()));

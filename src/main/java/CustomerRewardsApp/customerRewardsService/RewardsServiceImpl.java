@@ -24,26 +24,24 @@ public class RewardsServiceImpl implements RewardsService{
 
     @Override
     public List<Transaction> getTransactionByCustId(String custId) {
-        List<Transaction> transactions;
-        if(rewardsRepository.getTransactionByCustId(custId).isEmpty()) {
+        List<Transaction> transactions = rewardsRepository.getTransactionByCustId(custId);;
+        if(transactions.isEmpty()) {
             throw new CustomerIdNotFoundException(("CustId : "+custId+" is not present in the Database"),"CustId not found");
         }
-        else transactions = rewardsRepository.getTransactionByCustId(custId);
         return transactions;
     }
 
     @Override
     public List<Transaction> getTransactionByCustIdAndMonth(String custId, String month) {
-        List<Transaction> transactions;
-        if(rewardsRepository.getTransactionByCustIdAndMonth(custId,month).isEmpty()) {
+        List<Transaction> transactions = rewardsRepository.getTransactionByCustIdAndMonth(custId,month);
+        if(transactions.isEmpty()) {
             throw new TransactionNotFoundException(("CustId : "+custId+" in the month "+month+" is not present in the Database"),"TransactionResponseEntity<?> not found");
         }
-        else transactions = rewardsRepository.getTransactionByCustId(custId);
         return transactions;
     }
 
     @Override
-    public List<Transaction> updateRewardPoint() {
+    public List<Transaction> updateRewardPoints() {
         List<Transaction> transactions = this.getAllTransaction();
         transactions.forEach(t -> t.setPoints(calculateRewardPoint(t)));
         return rewardsRepository.saveAll(transactions);
@@ -64,8 +62,9 @@ public class RewardsServiceImpl implements RewardsService{
     }
     public Reward getTotalReward(String custId, String month)
     {
-        if(this.getTransactionByCustIdAndMonth(custId, month).isEmpty()) throw new CustomerIdNotFoundException("Customer Id :"+custId+"On the month of "+month+" not in db", "CustId not present");
-        List<Transaction> trns = this.getTransactionByCustIdAndMonth(custId, month);
+        List<Transaction> trns;
+        if(this.getTransactionByCustIdAndMonth(custId, month).isEmpty()) throw new CustomerIdNotFoundException("Customer Id :"+custId+" On the month of "+month+" not in db", "CustId not present");
+        else trns = this.getTransactionByCustIdAndMonth(custId, month);
         int reward = trns.stream().mapToInt(Transaction::getPoints).sum();
         return new Reward(custId, month, reward);
     }

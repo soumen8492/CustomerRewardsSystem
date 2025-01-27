@@ -3,9 +3,9 @@ package CustomerRewardsApp.customerRewardsService;
 import CustomerRewardsApp.customerRewardsRepository.RewardsRepository;
 import CustomerRewardsApp.models.Transaction;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -16,10 +16,10 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 class RewardsServiceImplTest {
 
-    @Autowired
+    @InjectMocks
     RewardsServiceImpl rewardsService;
 
-    @MockitoBean
+    @Mock
     RewardsRepository rewardsRepository;
 
     @Test
@@ -54,8 +54,7 @@ class RewardsServiceImplTest {
                 Stream.of(new Transaction("1","1",125,"jan",0),
                         new Transaction("2","1",75,"jan",0)
                 ).collect(Collectors.toList()));
-        //System.out.println(rewardsService.updateRewardPoint().size());
-        assertEquals(0, rewardsService.updateRewardPoint().size());
+        assertEquals(0, rewardsService.updateRewardPoints().size());
     }
 
     @Test
@@ -100,7 +99,7 @@ class RewardsServiceImplTest {
 
     @Test
     void testGetTotalRewardWithCustIdAndMonth() {
-        when(rewardsRepository.getTransactionByCustIdAndMonth("1","jan")).thenReturn(Stream.of(
+        when(rewardsService.getTransactionByCustIdAndMonth("1","jan")).thenReturn(Stream.of(
                 new Transaction("1","1",170,"jan",190),
                 new Transaction("2","1",75,"jan",25)
         ).collect(Collectors.toList()));
