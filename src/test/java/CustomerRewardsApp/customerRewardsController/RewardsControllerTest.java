@@ -77,31 +77,21 @@ class RewardsControllerTest {
     @Test
     void getTotal() throws Exception{
         when(rewardsService.getTotalReward()).thenReturn(Stream.of(
-                new Reward("1",400),
-                new Reward("1",550)
+                new Reward("1"),
+                new Reward("1")
         ).collect(Collectors.toList()));
         MvcResult result = mockmvc.perform(get("/rewards/total")).andExpect(status().isOk()).andReturn();
         String str = result.getResponse().getContentAsString();
-        assertEquals(2, str.split("},").length);
+        assertEquals(2, str.split("},\\{").length);
     }
 
     @Test
     void getTotalByCustId() throws Exception{
         when(rewardsService.getTotalReward("1")).thenReturn(
-                new Reward("1",400)
+                new Reward("1")
         );
         MvcResult result = mockmvc.perform(get("/rewards/total/1")).andExpect(status().isOk()).andReturn();
         String str = result.getResponse().getContentAsString();
-        assertTrue(str.contains("point\":400"));
-    }
-
-    @Test
-    void getTotalByCustIdAndMonth() throws Exception{
-        when(rewardsService.getTotalReward("1","jan")).thenReturn(
-                new Reward("1","jan",400)
-        );
-        MvcResult result = mockmvc.perform(get("/rewards/total/1/jan")).andExpect(status().isOk()).andReturn();
-        String str = result.getResponse().getContentAsString();
-        assertTrue(str.contains("point\":400") && str.contains("month\":\"jan"));
+        assertTrue(str.contains("totalRewards\":0"));
     }
 }

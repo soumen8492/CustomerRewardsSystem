@@ -44,9 +44,4 @@ public class RewardsController {
     {
         return ResponseEntity.ok(rewardsService.getTotalReward(custId));
     }
-    @GetMapping("/total/{customerId}/{month}")
-    public ResponseEntity<Reward> getTotalByCustIdAndMonth(@PathVariable("customerId") String custId, @PathVariable("month") String month)
-    {
-        return ResponseEntity.ok(rewardsService.getTotalReward(custId, month));
-    }
 }

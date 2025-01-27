@@ -8,10 +8,8 @@ import CustomerRewardsApp.models.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class RewardsServiceImpl implements RewardsService{
@@ -56,28 +54,29 @@ public class RewardsServiceImpl implements RewardsService{
     public Reward getTotalReward(String custId)
     {
         List<Transaction> trns = this.getTransactionByCustId(custId);
+        Reward reward = new Reward();
+        reward.setCustId(custId);
         if(trns.isEmpty()) throw new CustomerIdNotFoundException("Customer Id :"+custId+" not in db", "CustId not present");
-        int reward = trns.stream().mapToInt(Transaction::getPoints).sum();
-        return new Reward(custId, reward);
-    }
-    public Reward getTotalReward(String custId, String month)
-    {
-        List<Transaction> trns = this.getTransactionByCustIdAndMonth(custId, month);
-        if(trns.isEmpty()) throw new CustomerIdNotFoundException("Customer Id :"+custId+" On the month of "+month+" not in db", "CustId not present");
-        int reward = trns.stream().mapToInt(Transaction::getPoints).sum();
-        return new Reward(custId, month, reward);
+
+        //Logic to get month wise rewards
+        trns.forEach(t -> reward.getMonthlyRewards().merge(t.getMonthOfTransaction(),t.getPoints(),Integer::sum));
+        reward.setTotalRewards(reward.getMonthlyRewards().values().stream().mapToInt(i->i).sum());
+        return reward;
     }
 
     public List<Reward> getTotalReward() {
         List<Transaction> trn = this.getAllTransaction();
-        Map<String, Integer> custMap = new HashMap<>();
+        Map<String, Reward> rewardMap = new HashMap<>();
 
-        //Map to contain all sum values
-        trn.forEach(t -> custMap.merge(t.getCustId(), t.getPoints(), Integer::sum));
-
+        //Stream api logic to create rewardMap with custId
+        trn.stream().forEach(t -> {
+            rewardMap.computeIfAbsent(t.getCustId(), k -> new Reward(t.getCustId()))
+                    .getMonthlyRewards()
+                    .merge(t.getMonthOfTransaction(), t.getPoints(), Integer::sum);
+        });
+        rewardMap.values().forEach(r -> r.setTotalRewards(r.getMonthlyRewards().values().stream().mapToInt(i->i).sum()));
         //Output list
-        ArrayList<Reward> rewards = new ArrayList<>();
-        custMap.forEach( (a, b) -> rewards.add(new Reward(a,b)));
+        List<Reward> rewards = rewardMap.values().stream().collect(Collectors.toList());
         return rewards;
     }
 }

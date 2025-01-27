@@ -1,13 +1,31 @@
 package CustomerRewardsApp.models;
 
+import java.util.HashMap;
+
 public class Reward {
     private String custId;
-    private String month;
-    private int point;
+    private HashMap<String, Integer> monthlyRewards;
+    private int totalRewards;
 
-    public Reward(String custId, int point) {
+    public HashMap<String, Integer> getMonthlyRewards() {
+        return monthlyRewards;
+    }
+
+    public void setMonthlyRewards(HashMap<String, Integer> monthlyRewards) {
+        this.monthlyRewards = monthlyRewards;
+    }
+
+    public int getTotalRewards() {
+        return totalRewards;
+    }
+
+    public void setTotalRewards(int totalRewards) {
+        this.totalRewards = totalRewards;
+    }
+
+    public Reward(String custId) {
         this.custId = custId;
-        this.point = point;
+        this.monthlyRewards = new HashMap<>();
     }
 
     public String getCustId() {
@@ -18,37 +36,7 @@ public class Reward {
         this.custId = custId;
     }
 
-    public String getMonth() {
-        return month;
-    }
-
-    public void setMonth(String month) {
-        this.month = month;
-    }
-
-    public int getPoint() {
-        return point;
-    }
-
-    public void setPoint(int point) {
-        this.point = point;
-    }
-
     public Reward() {
-    }
-
-    public Reward(String custId, String month, int point) {
-        this.custId = custId;
-        this.month = month;
-        this.point = point;
-    }
-
-    @Override
-    public String toString() {
-        return "Reward{" +
-                "custId='" + custId + '\'' +
-                ", month='" + month + '\'' +
-                ", point=" + point +
-                '}';
+        this.setMonthlyRewards(new HashMap<>());
     }
 }

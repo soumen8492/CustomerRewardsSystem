@@ -94,16 +94,7 @@ class RewardsServiceImplTest {
                 new Transaction("1","1",150,"jan",150),
                 new Transaction("2","1",75,"feb",25)
         ).collect(Collectors.toList()));
-        assertEquals(175, rewardsService.getTotalReward("1").getPoint());
-    }
-
-    @Test
-    void testGetTotalRewardWithCustIdAndMonth() {
-        when(rewardsService.getTransactionByCustIdAndMonth("1","jan")).thenReturn(Stream.of(
-                new Transaction("1","1",170,"jan",190),
-                new Transaction("2","1",75,"jan",25)
-        ).collect(Collectors.toList()));
-        assertEquals(215, rewardsService.getTotalReward("1","jan").getPoint());
+        assertEquals(175, rewardsService.getTotalReward("1").getTotalRewards());
     }
 
     @Test
