@@ -22,7 +22,7 @@ public class RewardsServiceImpl implements RewardsService{
 
     @Override
     public List<Transaction> getTransactionByCustId(String custId) {
-        List<Transaction> transactions = rewardsRepository.getTransactionByCustId(custId);;
+        List<Transaction> transactions = rewardsRepository.getTransactionByCustId(custId);
         if(transactions.isEmpty()) {
             throw new CustomerIdNotFoundException(("CustId : "+custId+" is not present in the Database"),"CustId not found");
         }
@@ -54,8 +54,7 @@ public class RewardsServiceImpl implements RewardsService{
     public Reward getTotalReward(String custId)
     {
         List<Transaction> trns = this.getTransactionByCustId(custId);
-        Reward reward = new Reward();
-        reward.setCustId(custId);
+        Reward reward = new Reward(custId);
         if(trns.isEmpty()) throw new CustomerIdNotFoundException("Customer Id :"+custId+" not in db", "CustId not present");
 
         //Logic to get month wise rewards
@@ -69,14 +68,13 @@ public class RewardsServiceImpl implements RewardsService{
         Map<String, Reward> rewardMap = new HashMap<>();
 
         //Stream api logic to create rewardMap with custId
-        trn.stream().forEach(t -> {
+        trn.stream().forEach(t ->
             rewardMap.computeIfAbsent(t.getCustId(), k -> new Reward(t.getCustId()))
                     .getMonthlyRewards()
-                    .merge(t.getMonthOfTransaction(), t.getPoints(), Integer::sum);
-        });
+                    .merge(t.getMonthOfTransaction(), t.getPoints(), Integer::sum)
+        );
         rewardMap.values().forEach(r -> r.setTotalRewards(r.getMonthlyRewards().values().stream().mapToInt(i->i).sum()));
         //Output list
-        List<Reward> rewards = rewardMap.values().stream().collect(Collectors.toList());
-        return rewards;
+        return rewardMap.values().stream().collect(Collectors.toList());
     }
 }
