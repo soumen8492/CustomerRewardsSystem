@@ -18,9 +18,9 @@ public class CustomerIdNotFoundException extends RuntimeException{
 
     @Override
     public String toString() {
-        return "{" +
+        return "{\n" +
                 "errMsg='" + errMsg + '\'' +
                 "\nmessage='" + super.getMessage() + '\'' +
-                '}';
+                "\n}";
     }
 }

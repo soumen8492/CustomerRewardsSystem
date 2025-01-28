@@ -13,10 +13,10 @@ public class TransactionNotFoundException extends RuntimeException{
 
     @Override
     public String toString() {
-        return "{" +
+        return "{\n" +
                 "errMsg='" + errMsg + '\'' +
                 "\nMessage='" + super.getMessage() + '\'' +
-                '}';
+                "\n}";
     }
 
     public TransactionNotFoundException(String message, String errMsg) {
