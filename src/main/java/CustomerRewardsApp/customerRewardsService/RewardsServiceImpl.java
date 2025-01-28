@@ -46,7 +46,8 @@ public class RewardsServiceImpl implements RewardsService{
     }
     public int calculateRewardPoint(Transaction trn)
     {
-        int amount = trn.getAmount();
+        Integer amount = Optional.ofNullable(trn.getAmount())
+                .orElseThrow(() -> new IllegalArgumentException("Transaction amount cannot be null"));
         if(amount<=50) return 0;
         else if(amount<=100) return (amount-50);
         else return 2*(amount-100)+50;
