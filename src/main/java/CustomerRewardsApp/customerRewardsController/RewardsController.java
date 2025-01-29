@@ -2,6 +2,7 @@ package CustomerRewardsApp.customerRewardsController;
 
 import CustomerRewardsApp.customerRewardsService.RewardsServiceImpl;
 import CustomerRewardsApp.models.Reward;
+import CustomerRewardsApp.models.RewardDTO;
 import CustomerRewardsApp.models.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,34 +15,15 @@ import java.util.List;
 public class RewardsController {
     @Autowired
     RewardsServiceImpl rewardsService;
-    @GetMapping("/allTransaction")
-    public ResponseEntity<List<Transaction>> getAllTransactions()
-    {
-        return ResponseEntity.ok(rewardsService.getAllTransaction());
-    }
-    @PatchMapping("/calcRewards")
-    public ResponseEntity<List<Transaction>> calculateRewardPoint()
-    {
-        return ResponseEntity.ok(rewardsService.updateRewardPoints());
-    }
-    @GetMapping("/transactions/{customerId}/{month}")
-    public ResponseEntity<List<Transaction>> getByCustIdAndMonth(@PathVariable("customerId") String custId, @PathVariable("month") String month)
-    {
-        return ResponseEntity.ok(rewardsService.getTransactionByCustIdAndMonth(custId, month));
-    }
-    @GetMapping("/transactions/{customerId}")
-    public ResponseEntity<List<Transaction>> getByCustId(@PathVariable("customerId") String custId)
-    {
-        return ResponseEntity.ok(rewardsService.getTransactionByCustId(custId));
-    }
+
     @GetMapping("/total")
-    public List<Reward> getTotal()
+    public List<RewardDTO> getTotal()
     {
-        return rewardsService.getTotalReward();
+        return rewardsService.calculateRewardPoints();
     }
     @GetMapping("/total/{customerId}")
-    public ResponseEntity<Reward> getTotalByCustId(@PathVariable("customerId") String custId)
+    public ResponseEntity<RewardDTO> getTotalByCustId(@PathVariable("customerId") String custId)
     {
-        return ResponseEntity.ok(rewardsService.getTotalReward(custId));
+        return ResponseEntity.ok(rewardsService.calculateRewardPoints(custId));
     }
 }

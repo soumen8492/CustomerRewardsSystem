@@ -25,7 +25,7 @@ class RewardsServiceImplTest {
     @Test
     void getAllTransaction() {
         when(rewardsRepository.findAll()).thenReturn(
-                Stream.of(new Transaction("1","1",125,"jan",0))
+                Stream.of(new Transaction("1","1",125,"jan"))
                         .collect(Collectors.toList()));
         assertEquals(1, rewardsService.getAllTransaction().size());
     }
@@ -33,8 +33,8 @@ class RewardsServiceImplTest {
     @Test
     void getTransactionByCustId() {
         when(rewardsRepository.getTransactionByCustId("1")).thenReturn(
-                Stream.of(new Transaction("1","1",125,"jan",0),
-                        new Transaction("2","1",50,"feb",0)
+                Stream.of(new Transaction("1","1",125,"jan"),
+                        new Transaction("2","1",50,"feb")
                         ).collect(Collectors.toList()));
         assertEquals(2, rewardsService.getTransactionByCustId("1").size());
     }
@@ -42,8 +42,8 @@ class RewardsServiceImplTest {
     @Test
     void getTransactionByCustIdAndMonth() {
         when(rewardsRepository.getTransactionByCustIdAndMonth("1", "jan")).thenReturn(
-                Stream.of(new Transaction("1","1",125,"jan",0),
-                        new Transaction("2","1",50,"jan",0)
+                Stream.of(new Transaction("1","1",125,"jan"),
+                        new Transaction("2","1",50,"jan")
                 ).collect(Collectors.toList()));
         assertEquals(2, rewardsService.getTransactionByCustIdAndMonth("1","jan").size());
     }
@@ -51,8 +51,8 @@ class RewardsServiceImplTest {
     @Test
     void updateRewardPoint() {
         when(rewardsService.getAllTransaction()).thenReturn(
-                Stream.of(new Transaction("1","1",125,"jan",0),
-                        new Transaction("2","1",75,"jan",0)
+                Stream.of(new Transaction("1","1",125,"jan"),
+                        new Transaction("2","1",75,"jan")
                 ).collect(Collectors.toList()));
         assertEquals(0, rewardsService.updateRewardPoints().size());
     }
@@ -91,8 +91,8 @@ class RewardsServiceImplTest {
     @Test
     void getTotalRewardWithCustId() {
         when(rewardsRepository.getTransactionByCustId("1")).thenReturn(Stream.of(
-                new Transaction("1","1",150,"jan",150),
-                new Transaction("2","1",75,"feb",25)
+                new Transaction("1","1",150,"jan"),
+                new Transaction("2","1",75,"feb")
         ).collect(Collectors.toList()));
         assertEquals(175, rewardsService.getTotalReward("1").getTotalRewards());
     }
@@ -100,9 +100,9 @@ class RewardsServiceImplTest {
     @Test
     void testGetTotalRewardAll() {
         when(rewardsRepository.findAll()).thenReturn(Stream.of(
-                new Transaction("1","1",170,"jan",190),
-                new Transaction("2","2",75,"jan",25),
-                new Transaction("3","2",25,"feb",0)
+                new Transaction("1","1",170,"jan"),
+                new Transaction("2","2",75,"jan"),
+                new Transaction("3","2",25,"feb")
         ).collect(Collectors.toList()));
         assertEquals(2, rewardsService.getTotalReward().size());
     }

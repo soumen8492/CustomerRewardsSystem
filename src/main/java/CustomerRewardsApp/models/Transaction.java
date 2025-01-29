@@ -13,30 +13,37 @@ public class Transaction {
     private String TransactionId;
     @Column(name="cust_id")
     private String custId;
+    @Column(name = "name")
+    private String name;
     @Column(name="amount")
     private int amount;
-    @Column(name="mnth")
-    private String monthOfTransaction;
-    @Column(name="points")
-    private int points;
-
-    public int getPoints() {
-        return points;
-    }
-
-    public void setPoints(int points) {
-        this.points = points;
-    }
+    @Column(name="tran_date")
+    private String tranDate;
 
     public Transaction() {
     }
 
-    public Transaction(String transactionId, String custId, int amount, String monthOfTransaction, int points) {
+    public Transaction(String transactionId, String custId, int amount, String tranDate) {
         TransactionId = transactionId;
         this.custId = custId;
         this.amount = amount;
-        this.monthOfTransaction = monthOfTransaction;
-        this.points = points;
+        this.tranDate = tranDate;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getTranDate() {
+        return tranDate;
+    }
+
+    public void setTranDate(String tranDate) {
+        this.tranDate = tranDate;
     }
 
     public String getTransactionId() {
@@ -63,22 +70,14 @@ public class Transaction {
         this.amount = amount;
     }
 
-    public String getMonthOfTransaction() {
-        return monthOfTransaction;
-    }
-
-    public void setMonthOfTransaction(String monthOfTransaction) {
-        this.monthOfTransaction = monthOfTransaction;
-    }
-
     @Override
     public String toString() {
         return "Transaction{" +
                 "TransactionId='" + TransactionId + '\'' +
                 ", custId='" + custId + '\'' +
+                ", name='" + name + '\'' +
                 ", amount=" + amount +
-                ", points=" + points +
-                ", monthOfTransaction='" + monthOfTransaction + '\'' +
+                ", tranDate='" + tranDate + '\'' +
                 '}';
     }
 }

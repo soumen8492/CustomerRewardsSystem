@@ -3,7 +3,9 @@ package CustomerRewardsApp.customerRewardsService;
 import CustomerRewardsApp.customerRewardsException.CustomerIdNotFoundException;
 import CustomerRewardsApp.customerRewardsException.TransactionNotFoundException;
 import CustomerRewardsApp.customerRewardsRepository.RewardsRepository;
+import CustomerRewardsApp.customerRewardsRepository.TransactionRepository;
 import CustomerRewardsApp.models.Reward;
+import CustomerRewardsApp.models.RewardDTO;
 import CustomerRewardsApp.models.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,70 +14,63 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class RewardsServiceImpl implements RewardsService{
+public class RewardsServiceImpl implements RewardsService {
     @Autowired
     RewardsRepository rewardsRepository;
-    @Override
-    public List<Transaction> getAllTransaction() {
-        return rewardsRepository.findAll();
-    }
+    @Autowired
+    TransactionRepository transactionRepository;
 
     @Override
-    public List<Transaction> getTransactionByCustId(String custId) {
-        List<Transaction> transactions = rewardsRepository.getTransactionByCustId(custId);
-        if(transactions.isEmpty()) {
-            throw new CustomerIdNotFoundException(("CustId : "+custId+" is not present in the Database"),"CustId not found");
+    public List<RewardDTO> calculateRewardPoints() {
+        List<Transaction> transactions = transactionRepository.findAll();
+        Map<String, HashMap<String, Reward>> rewardMap = new HashMap<>();
+        //Mapping and Grouping Rewards by CustId and month of transaction
+        for (Transaction t : transactions) {
+            HashMap<String, Reward> monthlyMap;
+            Reward r;
+            if (!rewardMap.containsKey(t.getCustId())) {
+                monthlyMap = new HashMap<>();
+                monthlyMap.put(t.getTranDate(), new Reward((t.getCustId() + ":" + t.getTranDate()), t.getCustId(), t.getName(), t.getTranDate(), computeRewardPoint(t.getAmount())));
+                rewardMap.put(t.getCustId(), monthlyMap);
+            } else {
+                monthlyMap = rewardMap.get(t.getCustId());
+                if (monthlyMap.containsKey(t.getTranDate())) {
+                    r = monthlyMap.get(t.getTranDate());
+                    r.setPoints(r.getPoints() + computeRewardPoint(t.getAmount()));
+                } else {
+                    r = new Reward((t.getCustId() + ":" + t.getTranDate()), t.getCustId(), t.getName(), t.getTranDate(), computeRewardPoint(t.getAmount()));
+                }
+                monthlyMap.put(t.getTranDate(), r);
+            }
+            rewardMap.put(t.getCustId(), monthlyMap);
         }
-        return transactions;
-    }
-
-    @Override
-    public List<Transaction> getTransactionByCustIdAndMonth(String custId, String month) {
-        List<Transaction> transactions = rewardsRepository.getTransactionByCustIdAndMonth(custId,month);
-        if(transactions.isEmpty()) {
-            throw new TransactionNotFoundException(("CustId : "+custId+" in the month "+month+" is not present in the Database"),"TransactionResponseEntity<?> not found");
+        //Converting the group to a Reward List object
+        List<Reward> rewardList = new ArrayList<>();
+        for (String custId : rewardMap.keySet()) {
+            rewardList.addAll(rewardMap.get(custId).values());
         }
-        return transactions;
+        //save the data
+        rewardsRepository.saveAll(rewardList);
+        //Calculate total for all rewards
+        List<RewardDTO> customerTotalReward = new ArrayList<>();
+        for (String custId : rewardMap.keySet()) {
+            rewardList = rewardsRepository.findByCustId(custId);
+            int totalReward = rewardList.stream().mapToInt(Reward::getPoints).sum();
+            customerTotalReward.add(new RewardDTO(rewardList, totalReward));
+        }
+        return customerTotalReward;
     }
 
     @Override
-    public List<Transaction> updateRewardPoints() {
-        List<Transaction> transactions = this.getAllTransaction();
-        transactions.forEach(t -> t.setPoints(calculateRewardPoint(t)));
-        return rewardsRepository.saveAll(transactions);
-    }
-    public int calculateRewardPoint(Transaction trn)
-    {
-        Integer amount = Optional.ofNullable(trn.getAmount())
-                .orElseThrow(() -> new IllegalArgumentException("Transaction amount cannot be null"));
-        if(amount<=50) return 0;
-        else if(amount<=100) return (amount-50);
-        else return 2*(amount-100)+50;
-    }
-    public Reward getTotalReward(String custId)
-    {
-        List<Transaction> trns = this.getTransactionByCustId(custId);
-        Reward reward = new Reward(custId);
-        if(trns.isEmpty()) throw new CustomerIdNotFoundException("Customer Id :"+custId+" not in db", "CustId not present");
-
-        //Logic to get month wise rewards
-        trns.forEach(t -> reward.getMonthlyRewards().merge(t.getMonthOfTransaction(),t.getPoints(),Integer::sum));
-        reward.setTotalRewards(reward.getMonthlyRewards().values().stream().mapToInt(i->i).sum());
-        return reward;
+    public RewardDTO calculateRewardPoints(String custId) {
+        List<Reward> rewardList = rewardsRepository.findByCustId(custId);
+        int totalReward = rewardList.stream().mapToInt(Reward::getPoints).sum();
+        return new RewardDTO(rewardList, totalReward);
     }
 
-    public List<Reward> getTotalReward() {
-        List<Transaction> trn = this.getAllTransaction();
-        Map<String, Reward> rewardMap = new HashMap<>();
-
-        //Stream api logic to create rewardMap with custId
-        trn.stream().forEach(t ->
-            rewardMap.computeIfAbsent(t.getCustId(), k -> new Reward(t.getCustId()))
-                    .getMonthlyRewards()
-                    .merge(t.getMonthOfTransaction(), t.getPoints(), Integer::sum)
-        );
-        rewardMap.values().forEach(r -> r.setTotalRewards(r.getMonthlyRewards().values().stream().mapToInt(i->i).sum()));
-        //Output list
-        return rewardMap.values().stream().collect(Collectors.toList());
+    public int computeRewardPoint(int amount) {
+        if (amount <= 50) return 0;
+        else if (amount <= 100) return (amount - 50);
+        else return 2 * (amount - 100) + 50;
     }
 }

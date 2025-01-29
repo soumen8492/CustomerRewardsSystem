@@ -33,8 +33,8 @@ class RewardsControllerTest {
     @Test
     void getAllTransactions() throws Exception {
         when(rewardsService.getAllTransaction()).thenReturn(Stream.of(
-                new Transaction("1","1",100,"jan",0),
-                new Transaction("2","3",150,"mar",0)
+                new Transaction("1","1",100,"jan"),
+                new Transaction("2","3",150,"mar")
                 ).collect(Collectors.toList()));
         MvcResult result = mockmvc.perform(get("/rewards/allTransaction")).andExpect(status().isOk()).andReturn();
         String str = result.getResponse().getContentAsString();
@@ -44,8 +44,8 @@ class RewardsControllerTest {
     @Test
     void calculateRewardPoint() throws Exception {
         when(rewardsService.updateRewardPoints()).thenReturn(Stream.of(
-                new Transaction("1","1",100,"jan",50),
-                new Transaction("2","3",150,"mar",150)
+                new Transaction("1","1",100,"jan"),
+                new Transaction("2","3",150,"mar")
         ).collect(Collectors.toList()));
         MvcResult result = mockmvc.perform(patch("/rewards/calcRewards")).andExpect(status().isOk()).andReturn();
         String str = result.getResponse().getContentAsString();
@@ -55,8 +55,8 @@ class RewardsControllerTest {
     @Test
     void getByCustIdAndMonth() throws Exception {
         when(rewardsService.getTransactionByCustIdAndMonth("1","jan")).thenReturn(Stream.of(
-                new Transaction("1","1",100,"jan",0),
-                new Transaction("2","1",150,"jan",0)
+                new Transaction("1","1",100,"jan"),
+                new Transaction("2","1",150,"jan")
         ).collect(Collectors.toList()));
         MvcResult result = mockmvc.perform(get("/rewards/transactions/1/jan")).andExpect(status().isOk()).andReturn();
         String str = result.getResponse().getContentAsString();
@@ -66,8 +66,8 @@ class RewardsControllerTest {
     @Test
     void getByCustId() throws Exception{
         when(rewardsService.getTransactionByCustId("1")).thenReturn(Stream.of(
-                new Transaction("1","1",100,"jan",0),
-                new Transaction("2","1",150,"jan",0)
+                new Transaction("1","1",100,"jan"),
+                new Transaction("2","1",150,"jan")
         ).collect(Collectors.toList()));
         MvcResult result = mockmvc.perform(get("/rewards/transactions/1")).andExpect(status().isOk()).andReturn();
         String str = result.getResponse().getContentAsString();

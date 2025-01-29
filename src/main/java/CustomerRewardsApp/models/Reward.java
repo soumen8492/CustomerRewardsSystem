@@ -1,31 +1,64 @@
 package CustomerRewardsApp.models;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 import java.util.HashMap;
 
+@Entity
+@Table(name = "REWARDPOINTS")
 public class Reward {
+    @Id
+    @Column(name = "reward_id")
+    private String rewardId;
+    @Column(name = "cust_id")
     private String custId;
-    private HashMap<String, Integer> monthlyRewards;
-    private int totalRewards;
+    @Column
+    private String name;
+    @Column(name = "mnth")
+    private String month;
+    @Column
+    private int points;
 
-    public HashMap<String, Integer> getMonthlyRewards() {
-        return monthlyRewards;
+    public Reward() {
     }
 
-    public void setMonthlyRewards(HashMap<String, Integer> monthlyRewards) {
-        this.monthlyRewards = monthlyRewards;
+    public Reward(String rewardId, String custId, String name, String month, int points) {
+        this.rewardId = rewardId;
+        this.custId = custId;
+        this.name = name;
+        this.month = month;
+        this.points = points;
     }
 
-    public int getTotalRewards() {
-        return totalRewards;
+    public String getName() {
+        return name;
     }
 
-    public void setTotalRewards(int totalRewards) {
-        this.totalRewards = totalRewards;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getMonth() {
+        return month;
+    }
+
+    public void setMonth(String month) {
+        this.month = month;
+    }
+
+    public int getPoints() {
+        return points;
+    }
+
+    public void setPoints(int points) {
+        this.points = points;
     }
 
     public Reward(String custId) {
         this.custId = custId;
-        this.monthlyRewards = new HashMap<>();
     }
 
     public String getCustId() {
@@ -36,7 +69,14 @@ public class Reward {
         this.custId = custId;
     }
 
-    public Reward() {
-        this.setMonthlyRewards(new HashMap<>());
+    @Override
+    public String toString() {
+        return "Reward{" +
+                "RewardId='"+rewardId+'\''+
+                "custId='" + custId + '\'' +
+                ", name='" + name + '\'' +
+                ", month='" + month + '\'' +
+                ", points=" + points +
+                '}';
     }
 }
