@@ -16,6 +16,10 @@ public class CustomerRewardsSystemApplication implements CommandLineRunner {
         SpringApplication.run(CustomerRewardsSystemApplication.class);
     }
 
+    /**This may not be Industry standards
+     * but as the App only needs to fetch rewards data to display
+     * created this code snippet to initialize the rewards table
+      */
     @Override
     public void run(String... args) throws Exception {
         rewardsService.setRewardPoints();
