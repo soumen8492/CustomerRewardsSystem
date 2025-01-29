@@ -39,68 +39,75 @@ This little application demonstrates:
 Here are some endpoints you can call:
 
 ## Endpoints
-1. Get Total Rewards
-URL: ``` /rewards/total ```
-
-HTTP Method: GET
-
-Description: Retrieves the total reward points for all customers.
-
-Example Response:
-
+1. Get Total Rewards for All Customers
+  URL: /rewards/total
+  
+  HTTP Method: GET
+  
+  Description: Retrieves the total reward points for all customers.
+  
+  Response Sample:
 ```
 json
 [
   {
-    "rewards_data": [
+    "custId": "1",
+    "name": "Alex",
+    "total_points": 250,
+    "rewardDetails": [
       {
-        "custId": "1",
-        "name": "Alex",
         "month": "January",
         "points": 150
       },
       {
-        "custId": "1",
-        "name": "Alex",
         "month": "February",
         "points": 100
       }
-    ],
-    "total_points": 250
-  }...
+    ]
+  },
+  {
+    "custId": "2",
+    "name": "Leo",
+    "total_points": 300,
+    "rewardDetails": [
+      {
+        "month": "January",
+        "points": 150
+      },
+      {
+        "month": "February",
+        "points": 150
+      }
+    ]
+  }
 ]
 ```
-2. Get Total Rewards by Customer ID
-URL: ``` /rewards/total/{customerId} ```
-
-Description: Retrieves the total reward points for a specific customer by their ID.
-
-Response:
-
-Status Code: 200 OK (if customer ID is found)
-
-Example Response:
+2. Get Total Rewards for a Specific Customer
+ URL: /rewards/total/{customerId}
+ 
+ HTTP Method: GET
+ 
+ Description: Retrieves the total reward points for a specific customer by their ID.
+ 
+ Response Sample:
 ```
 json
 {
-  "rewards_data": [
+  "custId": "1",
+  "name": "Alex",
+  "total_points": 250,
+  "rewardDetails": [
     {
-      "custId": "1",
-      "name": "Alex",
       "month": "January",
       "points": 150
     },
     {
-      "custId": "1",
-      "name": "Alex",
       "month": "February",
       "points": 100
     }
-  ],
-  "total_points": 250
+  ]
 }
 ```
-
 ### To view your H2 in-memory datbase
 
 The application runs on H2 in-memory database. To view and query the database you can browse to http://localhost:8080/h2-console. Default username is 'sa' with a blank password.
