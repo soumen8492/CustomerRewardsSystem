@@ -1,7 +1,6 @@
 package CustomerRewardsApp.customerRewardsService;
 
 import CustomerRewardsApp.customerRewardsException.CustomerIdNotFoundException;
-import CustomerRewardsApp.customerRewardsException.TransactionNotFoundException;
 import CustomerRewardsApp.customerRewardsRepository.RewardsRepository;
 import CustomerRewardsApp.customerRewardsRepository.TransactionRepository;
 import CustomerRewardsApp.models.Reward;
@@ -10,8 +9,9 @@ import CustomerRewardsApp.models.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class RewardsServiceImpl implements RewardsService {
@@ -27,20 +27,21 @@ public class RewardsServiceImpl implements RewardsService {
         //Mapping and Grouping Rewards by CustId and month of transaction
         for (Transaction t : transactions) {
             HashMap<String, Reward> monthlyMap;
+            String month = LocalDate.parse(t.getTranDate(), DateTimeFormatter.ofPattern("MM/dd/yyyy")).format(DateTimeFormatter.ofPattern("MMMM", Locale.ENGLISH));
             Reward r;
             if (!rewardMap.containsKey(t.getCustId())) {
                 monthlyMap = new HashMap<>();
-                monthlyMap.put(t.getTranDate(), new Reward((t.getCustId() + ":" + t.getTranDate()), t.getCustId(), t.getName(), t.getTranDate(), computeRewardPoint(t.getAmount())));
+                monthlyMap.put(month, new Reward((t.getCustId() + ":" + month), t.getCustId(), t.getName(), month, computeRewardPoint(t.getAmount())));
                 rewardMap.put(t.getCustId(), monthlyMap);
             } else {
                 monthlyMap = rewardMap.get(t.getCustId());
-                if (monthlyMap.containsKey(t.getTranDate())) {
-                    r = monthlyMap.get(t.getTranDate());
+                if (monthlyMap.containsKey(month)) {
+                    r = monthlyMap.get(month);
                     r.setPoints(r.getPoints() + computeRewardPoint(t.getAmount()));
                 } else {
-                    r = new Reward((t.getCustId() + ":" + t.getTranDate()), t.getCustId(), t.getName(), t.getTranDate(), computeRewardPoint(t.getAmount()));
+                    r = new Reward((t.getCustId() + ":" + month), t.getCustId(), t.getName(), month, computeRewardPoint(t.getAmount()));
                 }
-                monthlyMap.put(t.getTranDate(), r);
+                monthlyMap.put(month, r);
             }
             rewardMap.put(t.getCustId(), monthlyMap);
         }
@@ -64,6 +65,7 @@ public class RewardsServiceImpl implements RewardsService {
     @Override
     public RewardDTO calculateRewardPoints(String custId) {
         List<Reward> rewardList = rewardsRepository.findByCustId(custId);
+        if(rewardList.isEmpty()) throw new CustomerIdNotFoundException("CustId not present", "CustId "+custId+" not present in DB");
         int totalReward = rewardList.stream().mapToInt(Reward::getPoints).sum();
         return new RewardDTO(rewardList, totalReward);
     }
