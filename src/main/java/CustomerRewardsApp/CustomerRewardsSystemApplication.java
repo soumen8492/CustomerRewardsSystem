@@ -1,11 +1,23 @@
 package CustomerRewardsApp;
 
+import CustomerRewardsApp.customerRewardsService.RewardsService;
+import CustomerRewardsApp.customerRewardsService.RewardsServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class CustomerRewardsSystemApplication {
+public class CustomerRewardsSystemApplication implements CommandLineRunner {
+
+    @Autowired
+    RewardsServiceImpl rewardsService;
     public static void main(String[] args) {
         SpringApplication.run(CustomerRewardsSystemApplication.class);
+    }
+
+    @Override
+    public void run(String... args) throws Exception {
+        rewardsService.setRewardPoints();
     }
 }

@@ -2,7 +2,7 @@ package CustomerRewardsApp.customerRewardsController;
 
 import CustomerRewardsApp.customerRewardsService.RewardsServiceImpl;
 import CustomerRewardsApp.models.Reward;
-import CustomerRewardsApp.models.RewardDTO;
+import CustomerRewardsApp.models.RewardResponse;
 import CustomerRewardsApp.models.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,13 +17,13 @@ public class RewardsController {
     RewardsServiceImpl rewardsService;
 
     @GetMapping("/total")
-    public List<RewardDTO> getTotal()
+    public ResponseEntity<List<RewardResponse>> getTotal()
     {
-        return rewardsService.calculateRewardPoints();
+        return rewardsService.createRewardResponse();
     }
     @GetMapping("/total/{customerId}")
-    public ResponseEntity<RewardDTO> getTotalByCustId(@PathVariable("customerId") String custId)
+    public ResponseEntity<RewardResponse> getTotalByCustId(@PathVariable("customerId") String custId)
     {
-        return ResponseEntity.ok(rewardsService.calculateRewardPoints(custId));
+        return rewardsService.createRewardResponse(custId);
     }
 }
