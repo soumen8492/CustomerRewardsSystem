@@ -39,125 +39,65 @@ This little application demonstrates:
 Here are some endpoints you can call:
 
 ## Endpoints
-1. Get All Transactions
-```
-URL: /allTransaction
-Method: GET
-Description: Retrieves a list of all transactions.
-Response: ResponseEntity<List<Transaction>>
-Example:
-json
-[
-  {
-    "tranId": "1",
-    "custId": "1",
-    "amount": 150,
-    "mnth": "jan",
-    "points": 0
-  },
-  ...
-]
-```
-2. Calculate Reward Points
-```
-URL: /calcRewards
-Method: PATCH
-Description: Calculates and updates reward points for all transactions.
-Response: ResponseEntity<List<Transaction>>
-Example:
-json
-[
-  {
-    "tranId": "1",
-    "custId": "1",
-    "amount": 150,
-    "mnth": "jan",
-    "points": 10
-  },
-  ...
-]
-```
-3. Get Transactions by Customer ID and Month
-```
-URL: /transactions/{customerId}/{month}
-Method: GET
-Description: Retrieves a list of transactions for a specific customer and month.
-Path Variables:
-customerId (String): The ID of the customer.
-month (String): The month of the transactions.
-Response: ResponseEntity<List<Transaction>>
-Example:
-json
-[
-  {
-    "tranId": "1",
-    "custId": "1",
-    "amount": 170,
-    "mnth": "jan",
-    "points": 190
-  },
-  ...
-]
-```
-4. Get Transactions by Customer ID
-```
-URL: /transactions/{customerId}
-Method: GET
-Description: Retrieves a list of transactions for a specific customer.
-Path Variables:
-customerId (String): The ID of the customer.
-Response: ResponseEntity<List<Transaction>>
-Example:
-json
-[
-  {
-    "tranId": "1",
-    "custId": "1",
-    "amount": 150,
-    "mnth": "jan",
-    "points": 0
-  },
-  ...
-]
-```
-5. Get Total Rewards
-```
-URL: /total
-Method: GET
-Description: Retrieves the total rewards for all customers with all months.
-Response: List<Reward>
-Example:
-json
-[{
-  "custId": "1",
-  "monthlyRewards": {
-    "feb": 3668,
-    "jan": 3302,
-    "mar": 5028
-  },
-  "totalRewards": 16998
-}.....
-]
+1. Get Total Rewards
+URL: ``` /rewards/total ```
+
+HTTP Method: GET
+
+Description: Retrieves the total reward points for all customers.
+
+Example Response:
 
 ```
-6. Get Total Rewards by Customer ID
+json
+[
+  {
+    "rewards_data": [
+      {
+        "custId": "1",
+        "name": "Alex",
+        "month": "January",
+        "points": 150
+      },
+      {
+        "custId": "1",
+        "name": "Alex",
+        "month": "February",
+        "points": 100
+      }
+    ],
+    "total_points": 250
+  }...
+]
 ```
-URL: /total/{customerId}
-Method: GET
-Description: Retrieves the total rewards for a specific customer.
-Path Variables:
-customerId (String): The ID of the customer.
-Response: ResponseEntity<Reward>
-Example:
+2. Get Total Rewards by Customer ID
+URL: ``` /rewards/total/{customerId} ```
+
+Description: Retrieves the total reward points for a specific customer by their ID.
+
+Response:
+
+Status Code: 200 OK (if customer ID is found)
+
+Example Response:
+```
 json
 {
-  "custId": "1",
-  "monthlyRewards": {
-    "feb": 3668,
-    "jan": 3302,
-    "mar": 5028
-  },
-  "totalRewards": 16998
+  "rewards_data": [
+    {
+      "custId": "1",
+      "name": "Alex",
+      "month": "January",
+      "points": 150
+    },
+    {
+      "custId": "1",
+      "name": "Alex",
+      "month": "February",
+      "points": 100
+    }
+  ],
+  "total_points": 250
 }
 ```
 
@@ -165,4 +105,3 @@ json
 
 The application runs on H2 in-memory database. To view and query the database you can browse to http://localhost:8080/h2-console. Default username is 'sa' with a blank password.
 
-# Questions and Comments: soumen8492@gmail.com
