@@ -10,7 +10,7 @@ import jakarta.persistence.Table;
 public class Transaction {
     @Id
     @Column(name = "tran_id")
-    private String TransactionId;
+    private String transactionId;
     @Column(name="cust_id")
     private String custId;
     @Column(name = "name")
@@ -23,12 +23,14 @@ public class Transaction {
     public Transaction() {
     }
 
-    public Transaction(String transactionId, String custId, int amount, String tranDate) {
-        TransactionId = transactionId;
+    public Transaction(String transactionId, String custId, String name, String tranDate, int amount) {
+        this.transactionId = transactionId;
         this.custId = custId;
         this.amount = amount;
         this.tranDate = tranDate;
+        this.name = name;
     }
+
 
     public String getName() {
         return name;
@@ -47,11 +49,11 @@ public class Transaction {
     }
 
     public String getTransactionId() {
-        return TransactionId;
+        return transactionId;
     }
 
     public void setTransactionId(String transactionId) {
-        TransactionId = transactionId;
+        transactionId = transactionId;
     }
 
     public String getCustId() {
@@ -73,7 +75,7 @@ public class Transaction {
     @Override
     public String toString() {
         return "Transaction{" +
-                "TransactionId='" + TransactionId + '\'' +
+                "TransactionId='" + transactionId + '\'' +
                 ", custId='" + custId + '\'' +
                 ", name='" + name + '\'' +
                 ", amount=" + amount +

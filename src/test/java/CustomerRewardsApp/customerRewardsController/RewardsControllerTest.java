@@ -1,20 +1,32 @@
 package CustomerRewardsApp.customerRewardsController;
 
+import CustomerRewardsApp.customerRewardsException.CustomerIdNotFoundException;
 import CustomerRewardsApp.customerRewardsService.RewardsServiceImpl;
 import CustomerRewardsApp.models.Reward;
+import CustomerRewardsApp.models.RewardDTO;
 import CustomerRewardsApp.models.Transaction;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -22,76 +34,52 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ExtendWith(MockitoExtension.class)
 class RewardsControllerTest {
-    @Autowired
-    RewardsController rewardsController;
-    @Autowired
-    MockMvc mockmvc;
-    @MockitoBean
-    RewardsServiceImpl rewardsService;
+    @Mock
+    private RewardsServiceImpl rewardsService;
 
-    @Test
-    void getAllTransactions() throws Exception {
-        when(rewardsService.getAllTransaction()).thenReturn(Stream.of(
-                new Transaction("1","1",100,"jan"),
-                new Transaction("2","3",150,"mar")
-                ).collect(Collectors.toList()));
-        MvcResult result = mockmvc.perform(get("/rewards/allTransaction")).andExpect(status().isOk()).andReturn();
-        String str = result.getResponse().getContentAsString();
-        assertEquals(2, str.split("},").length);
+    @InjectMocks
+    private RewardsController rewardsController;
+
+    private RewardDTO rewardDTO1;
+    private RewardDTO rewardDTO2;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        rewardDTO1 = new RewardDTO();
+        rewardDTO1.setTotal_points(100);
+        rewardDTO2 = new RewardDTO();
+        rewardDTO2.setTotal_points(200);
     }
 
     @Test
-    void calculateRewardPoint() throws Exception {
-        when(rewardsService.updateRewardPoints()).thenReturn(Stream.of(
-                new Transaction("1","1",100,"jan"),
-                new Transaction("2","3",150,"mar")
-        ).collect(Collectors.toList()));
-        MvcResult result = mockmvc.perform(patch("/rewards/calcRewards")).andExpect(status().isOk()).andReturn();
-        String str = result.getResponse().getContentAsString();
-        assertTrue(str.contains("points\":50") && str.contains("points\":150"));
+    void getTotal_ShouldReturnListOfRewardDTOs() {
+        List<RewardDTO> rewardDTOList = Arrays.asList(rewardDTO1, rewardDTO2);
+        when(rewardsService.calculateRewardPoints()).thenReturn(rewardDTOList);
+
+        List<RewardDTO> result = rewardsController.getTotal();
+
+        assertEquals(2, result.size());
+        assertEquals(100, result.get(0).getTotal_points());
+        assertEquals(200, result.get(1).getTotal_points());
     }
 
     @Test
-    void getByCustIdAndMonth() throws Exception {
-        when(rewardsService.getTransactionByCustIdAndMonth("1","jan")).thenReturn(Stream.of(
-                new Transaction("1","1",100,"jan"),
-                new Transaction("2","1",150,"jan")
-        ).collect(Collectors.toList()));
-        MvcResult result = mockmvc.perform(get("/rewards/transactions/1/jan")).andExpect(status().isOk()).andReturn();
-        String str = result.getResponse().getContentAsString();
-        assertEquals(2, str.split("},").length);
+    void getTotalByCustId_ShouldReturnNotExistentCustomerId() {
+        String custId = "non-existent";
+        doThrow(new CustomerIdNotFoundException("CustId not present", "CustId " + custId + " not present in DB"))
+                .when(rewardsService).calculateRewardPoints(custId);
+
+        Exception exception = assertThrows(CustomerIdNotFoundException.class, () -> {
+            rewardsController.getTotalByCustId(custId);
+        });
+
+        String expectedMessage = "CustId not present";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
     }
 
-    @Test
-    void getByCustId() throws Exception{
-        when(rewardsService.getTransactionByCustId("1")).thenReturn(Stream.of(
-                new Transaction("1","1",100,"jan"),
-                new Transaction("2","1",150,"jan")
-        ).collect(Collectors.toList()));
-        MvcResult result = mockmvc.perform(get("/rewards/transactions/1")).andExpect(status().isOk()).andReturn();
-        String str = result.getResponse().getContentAsString();
-        assertEquals(2, str.split("},").length);
-    }
-
-    @Test
-    void getTotal() throws Exception{
-        when(rewardsService.getTotalReward()).thenReturn(Stream.of(
-                new Reward("1"),
-                new Reward("1")
-        ).collect(Collectors.toList()));
-        MvcResult result = mockmvc.perform(get("/rewards/total")).andExpect(status().isOk()).andReturn();
-        String str = result.getResponse().getContentAsString();
-        assertEquals(2, str.split("},\\{").length);
-    }
-
-    @Test
-    void getTotalByCustId() throws Exception{
-        when(rewardsService.getTotalReward("1")).thenReturn(
-                new Reward("1")
-        );
-        MvcResult result = mockmvc.perform(get("/rewards/total/1")).andExpect(status().isOk()).andReturn();
-        String str = result.getResponse().getContentAsString();
-        assertTrue(str.contains("totalRewards\":0"));
-    }
 }
