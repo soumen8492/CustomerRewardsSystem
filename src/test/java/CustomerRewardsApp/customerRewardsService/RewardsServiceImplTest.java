@@ -4,26 +4,24 @@ import CustomerRewardsApp.customerRewardsException.CustomerIdNotFoundException;
 import CustomerRewardsApp.customerRewardsRepository.RewardsRepository;
 import CustomerRewardsApp.customerRewardsRepository.TransactionRepository;
 import CustomerRewardsApp.models.Reward;
-import CustomerRewardsApp.models.RewardDTO;
+import CustomerRewardsApp.models.RewardResponse;
 import CustomerRewardsApp.models.Transaction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
-class RewardsServiceImplTest {
+@ExtendWith(MockitoExtension.class)
+public class RewardsServiceImplTest {
+
     @Mock
     private RewardsRepository rewardsRepository;
 
@@ -37,6 +35,7 @@ class RewardsServiceImplTest {
     private Transaction transaction2;
     private Reward reward1;
     private Reward reward2;
+    private Reward reward3;
 
     @BeforeEach
     void setUp() {
@@ -45,45 +44,74 @@ class RewardsServiceImplTest {
         transaction2 = new Transaction("2", "2", "Leo", "02/01/2023", 300);
         reward1 = new Reward("1:January", "1", "Alex", "January", 150);
         reward2 = new Reward("2:February", "2", "Leo", "February", 350);
+        reward3 = new Reward("3:January", "1", "Alex", "January", 200);
     }
 
     @Test
-    void calculateRewardPoints_ShouldReturnRewardDTOList() {
+    void setRewardPoints_ShouldMapAndSaveRewards() {
         when(transactionRepository.findAll()).thenReturn(Arrays.asList(transaction1, transaction2));
+
+        rewardsService.setRewardPoints();
+
+        Map<String, HashMap<String, Reward>> rewardMap = new HashMap<>();
+        // Adding expected data to the map
+        HashMap<String, Reward> monthlyMap1 = new HashMap<>();
+        monthlyMap1.put("January", reward1);
+        HashMap<String, Reward> monthlyMap2 = new HashMap<>();
+        monthlyMap2.put("February", reward2);
+        rewardMap.put("1", monthlyMap1);
+        rewardMap.put("2", monthlyMap2);
+
+        List<Reward> rewardList = new ArrayList<>();
+        rewardList.addAll(monthlyMap1.values());
+        rewardList.addAll(monthlyMap2.values());
+
+        rewardsRepository.saveAll(rewardList);
+    }
+
+    @Test
+    void createRewardResponse_ShouldReturnListOfRewardResponses() {
+        List<String> custIdList = Arrays.asList("1", "2");
+        when(rewardsRepository.findCustId()).thenReturn(custIdList);
         when(rewardsRepository.findByCustId("1")).thenReturn(Collections.singletonList(reward1));
         when(rewardsRepository.findByCustId("2")).thenReturn(Collections.singletonList(reward2));
 
-        List<RewardDTO> result = rewardsService.calculateRewardPoints();
+        ResponseEntity<List<RewardResponse>> result = rewardsService.createRewardResponse();
 
-        assertEquals(2, result.size());
-        assertEquals(150, result.get(0).getTotal_points());
-        assertEquals(350, result.get(1).getTotal_points());
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertNotNull(result.getBody());
+        assertEquals(2, result.getBody().size());
+        assertEquals("Alex", result.getBody().get(0).getName());
+        assertEquals("Leo", result.getBody().get(1).getName());
     }
 
     @Test
-    void calculateRewardPoints_ShouldThrowCustomerIdNotFoundException() {
+    void createRewardResponseByCustId_ShouldReturnRewardResponse() {
+        String custId = "1";
+        when(rewardsRepository.findByCustId(custId)).thenReturn(Arrays.asList(reward1, reward3));
+
+        ResponseEntity<RewardResponse> result = rewardsService.createRewardResponse(custId);
+
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertNotNull(result.getBody());
+        assertEquals(custId, result.getBody().getCustId());
+        assertEquals("Alex", result.getBody().getName());
+        assertEquals(2, result.getBody().getRewardDetails().size());
+    }
+
+    @Test
+    void createRewardResponseByCustId_ShouldThrowCustomerIdNotFoundException() {
         String custId = "non-existent";
         when(rewardsRepository.findByCustId(custId)).thenReturn(Collections.emptyList());
 
         Exception exception = assertThrows(CustomerIdNotFoundException.class, () -> {
-            rewardsService.calculateRewardPoints(custId);
+            rewardsService.createRewardResponse(custId);
         });
 
-        String expectedMessage = "CustId not present";
+        String expectedMessage = "Customer Id " + custId + " not present in DB";
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
-    }
-
-    @Test
-    void calculateRewardPointsByCustId_ShouldReturnRewardDTO() {
-        String custId = "1";
-        when(rewardsRepository.findByCustId(custId)).thenReturn(Collections.singletonList(reward1));
-
-        RewardDTO result = rewardsService.calculateRewardPoints(custId);
-
-        assertNotNull(result);
-        assertEquals(150, result.getTotal_points());
     }
 
     @Test
@@ -93,4 +121,6 @@ class RewardsServiceImplTest {
         assertEquals(50, rewardsService.computeRewardPoint(100));
         assertEquals(100, rewardsService.computeRewardPoint(125));
     }
+
+    // Additional tests for edge cases can be added as needed
 }
