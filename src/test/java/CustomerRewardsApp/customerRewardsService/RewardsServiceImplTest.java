@@ -15,9 +15,11 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import java.util.*;
+
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class RewardsServiceImplTest {
@@ -120,5 +122,82 @@ public class RewardsServiceImplTest {
         assertEquals(25, rewardsService.computeRewardPoint(75));
         assertEquals(50, rewardsService.computeRewardPoint(100));
         assertEquals(100, rewardsService.computeRewardPoint(125));
+    }
+
+    @Test
+    void setRewardPoints_ShouldHandleNullCustomerIDs() {
+        Transaction transactionWithNullCustId = new Transaction("3", null, "Unknown", "03/01/2023", 100);
+        when(transactionRepository.findAll()).thenReturn(Arrays.asList(transaction1, transactionWithNullCustId, transaction2));
+
+        rewardsService.setRewardPoints();
+
+        // Verifying that the saveAll method is called once
+        verify(rewardsRepository, times(1)).saveAll(anyList());
+    }
+
+    @Test
+    void createRewardResponse_ShouldHandleEmptyCustomerIds() {
+        when(rewardsRepository.findCustId()).thenReturn(Collections.emptyList());
+
+        ResponseEntity<List<RewardResponse>> result = rewardsService.createRewardResponse();
+
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertNotNull(result.getBody());
+        assertTrue(result.getBody().isEmpty());
+    }
+
+    @Test
+    void createRewardResponseByCustId_ShouldHandleEmptyRewards() {
+        String custId = "1";
+        when(rewardsRepository.findByCustId(custId)).thenReturn(Collections.emptyList());
+
+        Exception exception = assertThrows(CustomerIdNotFoundException.class, () -> {
+            rewardsService.createRewardResponse(custId);
+        });
+
+        String expectedMessage = "Customer Id " + custId + " not present in DB";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    void createRewardResponseByCustId_ShouldHandleNullRewards() {
+        String custId = "1";
+        when(rewardsRepository.findByCustId(custId)).thenReturn(new ArrayList<>());
+
+        Exception exception = assertThrows(CustomerIdNotFoundException.class, () -> {
+            rewardsService.createRewardResponse(custId);
+        });
+
+        String expectedMessage = "Customer Id " + custId + " not present in DB";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    void createRewardResponseByCustId_ShouldReturnEmptyResponseForNullCustomerId() {
+        String custId = null;
+
+        Exception exception = assertThrows(CustomerIdNotFoundException.class, () -> {
+            rewardsService.createRewardResponse(custId);
+        });
+
+        String expectedMessage = "Customer Id " + custId + " not present in DB";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    void computeRewardPoint_ShouldHandleNegativeAmounts() {
+        assertEquals(0, rewardsService.computeRewardPoint(-50));
+        assertEquals(0, rewardsService.computeRewardPoint(-1));
+    }
+
+    @Test
+    void computeRewardPoint_ShouldHandleZeroAmount() {
+        assertEquals(0, rewardsService.computeRewardPoint(0));
     }
 }
