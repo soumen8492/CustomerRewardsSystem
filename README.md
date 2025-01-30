@@ -50,36 +50,30 @@ Here are some endpoints you can call:
 ```
 json
 [
-  {
-    "custId": "1",
-    "name": "Alex",
-    "total_points": 250,
-    "rewardDetails": [
-      {
-        "month": "January",
-        "points": 150
-      },
-      {
-        "month": "February",
-        "points": 100
-      }
-    ]
-  },
-  {
-    "custId": "2",
-    "name": "Leo",
-    "total_points": 300,
-    "rewardDetails": [
-      {
-        "month": "January",
-        "points": 150
-      },
-      {
-        "month": "February",
-        "points": 150
-      }
-    ]
-  }
+     {
+        "custId": "1",
+        "name": "Alex",
+        "rewardDetails": [
+            {
+                "month": "January",
+                "points": 8302,
+                "amountSpent": 4751
+            },
+            {
+                "month": "February",
+                "points": 3668,
+                "amountSpent": 2094
+            },
+            {
+                "month": "March",
+                "points": 5028,
+                "amountSpent": 2964
+            }
+        ],
+        "total_points": 16998,
+        "totalAmountSpent": 9809
+    },
+    .....
 ]
 ```
 2. Get Total Rewards for a Specific Customer
@@ -93,22 +87,30 @@ json
 ```
 json
 {
-  "custId": "1",
-  "name": "Alex",
-  "total_points": 250,
-  "rewardDetails": [
-    {
-      "month": "January",
-      "points": 150
-    },
-    {
-      "month": "February",
-      "points": 100
-    }
-  ]
+    "custId": "1",
+    "name": "Alex",
+    "rewardDetails": [
+        {
+            "month": "January",
+            "points": 8302,
+            "amountSpent": 4751
+        },
+        {
+            "month": "February",
+            "points": 3668,
+            "amountSpent": 2094
+        },
+        {
+            "month": "March",
+            "points": 5028,
+            "amountSpent": 2964
+        }
+    ],
+    "total_points": 16998,
+    "totalAmountSpent": 9809
 }
 ```
 ### To view your H2 in-memory datbase
 
-The application runs on H2 in-memory database. To view and query the database you can browse to http://localhost:8080/h2-console. Default username is 'sa' with a blank password.
+The application runs on H2 in-memory database. To view and query the database you can browse to http://localhost:9098/h2-console. Default username is 'sa' with a blank password.
 
