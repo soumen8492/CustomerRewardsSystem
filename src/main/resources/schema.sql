@@ -12,5 +12,6 @@ reward_id VARCHAR(15) PRIMARY KEY,
 cust_id VARCHAR(10),
 name VARCHAR(10),
 mnth VARCHAR(15),
-points INT
+points INT,
+amount_spent INT
 );

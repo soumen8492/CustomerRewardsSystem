@@ -22,6 +22,25 @@ public class Reward {
     @Column
     private int points;
 
+    @Column(name = "amount_spent")
+    private int amountSpent;
+
+    public String getRewardId() {
+        return rewardId;
+    }
+
+    public void setRewardId(String rewardId) {
+        this.rewardId = rewardId;
+    }
+
+    public int getAmountSpent() {
+        return amountSpent;
+    }
+
+    public void setAmountSpent(int amountSpent) {
+        this.amountSpent = amountSpent;
+    }
+
     public Reward() {
     }
 
@@ -31,6 +50,15 @@ public class Reward {
         this.name = name;
         this.month = month;
         this.points = points;
+    }
+
+    public Reward(String rewardId, String custId, String name, String month, int points, int amountSpent) {
+        this.rewardId = rewardId;
+        this.custId = custId;
+        this.name = name;
+        this.month = month;
+        this.points = points;
+        this.amountSpent = amountSpent;
     }
 
     public String getName() {

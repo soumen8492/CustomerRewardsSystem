@@ -9,6 +9,15 @@ public class RewardResponse {
     private  String name;
     private List<RewardDetail> rewardDetails;
     private int total_points;
+    private int totalAmountSpent;
+
+    public int getTotalAmountSpent() {
+        return totalAmountSpent;
+    }
+
+    public void setTotalAmountSpent(int totalAmountSpent) {
+        this.totalAmountSpent = totalAmountSpent;
+    }
 
     public String getCustId() {
         return custId;

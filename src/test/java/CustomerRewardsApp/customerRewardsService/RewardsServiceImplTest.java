@@ -121,6 +121,4 @@ public class RewardsServiceImplTest {
         assertEquals(50, rewardsService.computeRewardPoint(100));
         assertEquals(100, rewardsService.computeRewardPoint(125));
     }
-
-    // Additional tests for edge cases can be added as needed
 }
