@@ -22,6 +22,6 @@ public class CustomerRewardsSystemApplication implements CommandLineRunner {
       */
     @Override
     public void run(String... args) throws Exception {
-        rewardsService.setRewardPoints();
+        rewardsService.createRewardPoints();
     }
 }
