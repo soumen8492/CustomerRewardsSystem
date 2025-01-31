@@ -108,7 +108,6 @@ public class RewardsServiceImpl implements RewardsService {
         map.put("October",10);
         map.put("November",11);
         map.put("December",12);
-
         return map.get(month);
     }
 
@@ -117,5 +116,4 @@ public class RewardsServiceImpl implements RewardsService {
         else if (amount <= 100) return (amount - 50);
         else return 2 * (amount - 100) + 50;
     }
-
 }

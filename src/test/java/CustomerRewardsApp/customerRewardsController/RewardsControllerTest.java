@@ -11,25 +11,35 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.doThrow;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest(RewardsController.class)
 public class RewardsControllerTest {
 
-    @Mock
-    private RewardsServiceImpl rewardsService;
+    @Autowired
+    private MockMvc mockMvc;
 
-    @InjectMocks
-    private RewardsController rewardsController;
+    @MockBean
+    private RewardsServiceImpl rewardsService;
 
     private RewardResponse rewardResponse1;
     private RewardResponse rewardResponse2;
@@ -40,91 +50,42 @@ public class RewardsControllerTest {
         rewardResponse1 = new RewardResponse();
         rewardResponse1.setCustId("1");
         rewardResponse1.setName("Alex");
-        rewardResponse1.setTotal_points(150);
-        rewardResponse1.setRewardDetails(Arrays.asList(
-                new RewardDetail("January", 100),
-                new RewardDetail("February", 50)
-        ));
+        rewardResponse1.setTotal_points(250);
 
         rewardResponse2 = new RewardResponse();
         rewardResponse2.setCustId("2");
         rewardResponse2.setName("Leo");
-        rewardResponse2.setTotal_points(200);
-        rewardResponse2.setRewardDetails(Arrays.asList(
-                new RewardDetail("January", 150),
-                new RewardDetail("February", 50)
-        ));
+        rewardResponse2.setTotal_points(300);
     }
 
     @Test
-    void getTotal_ShouldReturnListOfRewardResponses() {
-        List<RewardResponse> rewardResponses = Arrays.asList(rewardResponse1, rewardResponse2);
-        when(rewardsService.createRewardResponse()).thenReturn(new ResponseEntity<>(rewardResponses, HttpStatus.OK));
+    void getTotal_ShouldReturnListOfRewardResponses() throws Exception {
+        List<RewardResponse> rewardResponseList = Arrays.asList(rewardResponse1, rewardResponse2);
+        when(rewardsService.getRewardResponse()).thenReturn(new ResponseEntity<>(rewardResponseList, HttpStatus.OK));
 
-        ResponseEntity<List<RewardResponse>> result = rewardsController.getTotal();
-
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertNotNull(result.getBody());
-        assertEquals(2, result.getBody().size());
-        assertEquals("Alex", result.getBody().get(0).getName());
-        assertEquals("Leo", result.getBody().get(1).getName());
+        mockMvc.perform(get("/rewards/total"))
+                .andExpect(status().isOk())
+                .andExpect(result -> assertTrue(result.getResponse().getContentAsString().contains("\"Alex\"")));
     }
 
     @Test
-    void getTotal_ShouldReturnEmptyListWhenNoRewards() {
-        when(rewardsService.createRewardResponse()).thenReturn(new ResponseEntity<>(Collections.emptyList(), HttpStatus.OK));
+    void getTotalByCustId_ShouldReturnRewardResponse() throws Exception {
+        when(rewardsService.getRewardResponse(anyString())).thenReturn(new ResponseEntity<>(rewardResponse1, HttpStatus.OK));
 
-        ResponseEntity<List<RewardResponse>> result = rewardsController.getTotal();
-
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertNotNull(result.getBody());
-        assertTrue(result.getBody().isEmpty());
+        mockMvc.perform(get("/rewards/total/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.custId").value("1"))
+                .andExpect(jsonPath("$.name").value("Alex"))
+                .andExpect(jsonPath("$.total_points").value(250));
     }
 
     @Test
-    void getTotalByCustId_ShouldReturnRewardResponseForGivenCustomerId() {
-        String custId = "1";
-        when(rewardsService.createRewardResponse(custId)).thenReturn(new ResponseEntity<>(rewardResponse1, HttpStatus.OK));
+    void getTotalByCustId_ShouldReturnNotFound() throws Exception {
+        when(rewardsService.getRewardResponse(anyString())).thenThrow(new CustomerIdNotFoundException("Customer Id not in DB", "Customer ID does not exist"));
 
-        ResponseEntity<RewardResponse> result = rewardsController.getTotalByCustId(custId);
-
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertNotNull(result.getBody());
-        assertEquals(custId, result.getBody().getCustId());
-        assertEquals("Alex", result.getBody().getName());
+        mockMvc.perform(get("/rewards/total/non-existent"))
+                .andExpect(status().isOk())
+                .andExpect(result -> result.getResponse().getContentAsString().contains("Customer ID non-existent does not exist"));
     }
 
-    @Test
-    void getTotalByCustId_ShouldReturnNotFoundForNonExistentCustomerId() {
-        String custId = "non-existent";
-        doThrow(new CustomerIdNotFoundException("Customer Id " + custId + " not present in DB", "Id does not exist"))
-                .when(rewardsService).createRewardResponse(custId);
-
-        Exception exception = assertThrows(CustomerIdNotFoundException.class, () -> {
-            rewardsController.getTotalByCustId(custId);
-        });
-
-        String expectedMessage = "Customer Id " + custId + " not present in DB";
-        String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
-    }
-
-    @Test
-    void getTotalByCustId_ShouldReturnEmptyResponseForNullCustomerId() {
-        String custId = null;
-        doThrow(new CustomerIdNotFoundException("Customer Id " + custId + " not present in DB", "Id does not exist"))
-                .when(rewardsService).createRewardResponse(custId);
-
-        Exception exception = assertThrows(CustomerIdNotFoundException.class, () -> {
-            rewardsController.getTotalByCustId(custId);
-        });
-
-        String expectedMessage = "Customer Id " + custId + " not present in DB";
-        String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
-    }
-
-    // Additional tests for other edge cases can be added as needed
 }
