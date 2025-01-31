@@ -8,6 +8,6 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface RewardsService {
-    ResponseEntity<List<RewardResponse>> createRewardResponse();
-    ResponseEntity<RewardResponse> createRewardResponse(String custId);
+    ResponseEntity<List<RewardResponse>> getRewardResponse();
+    ResponseEntity<RewardResponse> getRewardResponse(String custId);
 }

@@ -11,7 +11,9 @@ import java.util.List;
 
 @Repository
 public interface RewardsRepository extends JpaRepository<Reward, String> {
-    List<Reward> findByCustId(String custId);
-    @Query(value = "select distinct cust_id from REWARDPOINTS order by cust_id asc", nativeQuery = true)
-    List<String> findCustId();
+    @Query(value = "SELECT rp.* " +
+            "FROM REWARDPOINTS rp " +
+            "JOIN CUSTOMERTRANSACTION ct ON rp.transaction_id = ct.tran_id " +
+            "WHERE ct.cust_id =:custId ORDER BY tran_id",nativeQuery = true)
+    List<Reward> findRewardsByCustId(@Param("custId") String custId);
 }
