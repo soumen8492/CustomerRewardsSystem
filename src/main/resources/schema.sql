@@ -9,9 +9,6 @@ amount INT
 DROP TABLE IF EXISTS REWARDPOINTS;
 CREATE TABLE REWARDPOINTS (
 reward_id VARCHAR(15) PRIMARY KEY,
-cust_id VARCHAR(10),
-name VARCHAR(10),
-mnth VARCHAR(15),
-points INT,
-amount_spent INT
+transaction_id INT,
+points INT
 );

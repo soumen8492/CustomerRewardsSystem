@@ -19,11 +19,11 @@ public class RewardsController {
     @GetMapping("/total")
     public ResponseEntity<List<RewardResponse>> getTotal()
     {
-        return rewardsService.createRewardResponse();
+        return rewardsService.getRewardResponse();
     }
     @GetMapping("/total/{customerId}")
     public ResponseEntity<RewardResponse> getTotalByCustId(@PathVariable("customerId") String custId)
     {
-        return rewardsService.createRewardResponse(custId);
+        return rewardsService.getRewardResponse(custId);
     }
 }

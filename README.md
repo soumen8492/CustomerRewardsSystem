@@ -50,30 +50,39 @@ Here are some endpoints you can call:
 ```
 json
 [
-     {
+    {
         "custId": "1",
         "name": "Alex",
         "rewardDetails": [
             {
                 "month": "January",
                 "points": 8302,
-                "amountSpent": 4751
-            },
-            {
-                "month": "February",
-                "points": 3668,
-                "amountSpent": 2094
-            },
-            {
-                "month": "March",
-                "points": 5028,
-                "amountSpent": 2964
-            }
-        ],
+                "amountSpent": 4751,
+                "transactionAndPoints": [
+                    {
+                        "dateOfTransaction": "01/07/2023",
+                        "amountSpent": 341,
+                        "earnedPoints": 532
+                    },
+                    {
+                        "dateOfTransaction": "01/09/2023",
+                        "amountSpent": 509,
+                        "earnedPoints": 868
+                    },....
+                    ],..
         "total_points": 16998,
         "totalAmountSpent": 9809
-    },
     .....
+{
+        "custId": "2",
+        "name": "Leo",
+        "rewardDetails": [
+            {
+                "month": "January",
+                "points": 5824,
+                "amountSpent": 3287,
+                "transactionAndPoints": [
+                    {
 ]
 ```
 2. Get Total Rewards for a Specific Customer
@@ -86,29 +95,32 @@ json
  Response Sample:
 ```
 json
-{
-    "custId": "1",
-    "name": "Alex",
-    "rewardDetails": [
-        {
-            "month": "January",
-            "points": 8302,
-            "amountSpent": 4751
-        },
-        {
-            "month": "February",
-            "points": 3668,
-            "amountSpent": 2094
-        },
-        {
-            "month": "March",
-            "points": 5028,
-            "amountSpent": 2964
-        }
-    ],
-    "total_points": 16998,
-    "totalAmountSpent": 9809
-}
+[
+    {
+        "custId": "1",
+        "name": "Alex",
+        "rewardDetails": [
+            {
+                "month": "January",
+                "points": 8302,
+                "amountSpent": 4751,
+                "transactionAndPoints": [
+                    {
+                        "dateOfTransaction": "01/07/2023",
+                        "amountSpent": 341,
+                        "earnedPoints": 532
+                    },
+                    {
+                        "dateOfTransaction": "01/09/2023",
+                        "amountSpent": 509,
+                        "earnedPoints": 868
+                    },....
+                    ],..
+             }
+        "total_points": 16998,
+        "totalAmountSpent": 9809
+    }   
+
 ```
 ### To view your H2 in-memory datbase
 

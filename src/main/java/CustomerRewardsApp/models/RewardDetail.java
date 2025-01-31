@@ -1,9 +1,21 @@
 package CustomerRewardsApp.models;
 
+import java.util.List;
+
 public class RewardDetail {
     private String month;
     private int points;
     private int amountSpent;
+
+    private List<TransactionAndPoints> transactionAndPoints;
+
+    public List<TransactionAndPoints> getTransactionAndPoints() {
+        return transactionAndPoints;
+    }
+
+    public void setTransactionAndPoints(List<TransactionAndPoints> transactionAndPoints) {
+        this.transactionAndPoints = transactionAndPoints;
+    }
 
     public int getAmountSpent() {
         return amountSpent;

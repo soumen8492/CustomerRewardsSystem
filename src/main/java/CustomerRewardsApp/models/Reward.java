@@ -13,17 +13,19 @@ public class Reward {
     @Id
     @Column(name = "reward_id")
     private String rewardId;
-    @Column(name = "cust_id")
-    private String custId;
-    @Column
-    private String name;
-    @Column(name = "mnth")
-    private String month;
+
+    @Column(name = "transaction_id")
+    private String transactionId;
     @Column
     private int points;
 
-    @Column(name = "amount_spent")
-    private int amountSpent;
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
+    }
 
     public String getRewardId() {
         return rewardId;
@@ -33,48 +35,13 @@ public class Reward {
         this.rewardId = rewardId;
     }
 
-    public int getAmountSpent() {
-        return amountSpent;
-    }
-
-    public void setAmountSpent(int amountSpent) {
-        this.amountSpent = amountSpent;
-    }
-
     public Reward() {
     }
 
-    public Reward(String rewardId, String custId, String name, String month, int points) {
+    public Reward(String rewardId, String transactionId, int points) {
         this.rewardId = rewardId;
-        this.custId = custId;
-        this.name = name;
-        this.month = month;
+        this.transactionId = transactionId;
         this.points = points;
-    }
-
-    public Reward(String rewardId, String custId, String name, String month, int points, int amountSpent) {
-        this.rewardId = rewardId;
-        this.custId = custId;
-        this.name = name;
-        this.month = month;
-        this.points = points;
-        this.amountSpent = amountSpent;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getMonth() {
-        return month;
-    }
-
-    public void setMonth(String month) {
-        this.month = month;
     }
 
     public int getPoints() {
@@ -85,25 +52,11 @@ public class Reward {
         this.points = points;
     }
 
-    public Reward(String custId) {
-        this.custId = custId;
-    }
-
-    public String getCustId() {
-        return custId;
-    }
-
-    public void setCustId(String custId) {
-        this.custId = custId;
-    }
-
     @Override
     public String toString() {
         return "Reward{" +
                 "RewardId='"+rewardId+'\''+
-                "custId='" + custId + '\'' +
-                ", name='" + name + '\'' +
-                ", month='" + month + '\'' +
+                "custId='" + transactionId + '\'' +
                 ", points=" + points +
                 '}';
     }
